@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
     textAlign: 'center', // Align body text in the center
   },
   footer: {
-    backgroundColor: '#333', // Fixed background color for the footer
+    backgroundColor: '#A1CEDC', // Fixed background color for the footer
     padding: 10,
     alignItems: 'center',
     justifyContent: 'center',
