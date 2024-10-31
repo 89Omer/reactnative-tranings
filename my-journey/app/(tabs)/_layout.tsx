@@ -1,6 +1,5 @@
 import { Tabs } from 'expo-router';
 import React from 'react';
-
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
@@ -14,13 +13,12 @@ export default function TabLayout() {
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
       }}>
-      <Tabs.Screen
-        name="index"
+       
+       <Tabs.Screen
+        name="profile"
         options={{
-          title: 'Home',
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
-          ),
+          title: 'Upload Image',
+          tabBarIcon: ({ color }) => <TabBarIcon name="person" color={color} />,
         }}
       />
         <Tabs.Screen
@@ -30,13 +28,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <TabBarIcon name="settings" color={color} />,
         }}
       />
-       <Tabs.Screen
-        name="profile"
-        options={{
-          title: 'My Profile',
-          tabBarIcon: ({ color }) => <TabBarIcon name="person" color={color} />,
-        }}
-      />
+      
     </Tabs>
   );
 }

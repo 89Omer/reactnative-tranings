@@ -6,7 +6,6 @@ type Props = {
   label: string;
   theme1?: 'primary';
   theme2?: 'secondary'
-
 };
 
 export default function ImageButton({ label, theme1, theme2 }: Props) {

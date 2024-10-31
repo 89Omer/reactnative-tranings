@@ -3,7 +3,8 @@ import ImageViewer from '@/components/ImageViewer';
 import { Image } from 'expo-image'; 
 import Button from '@/components/ImageButton';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
+import InputField from '@/components/InputField';
+import { useNavigation } from '@react-navigation/native';
 
 
 /* @tutinfo Import the image from the "assets/images/" directory. Since this picture is a static resource, you have to reference it using <CODE>require</CODE>. */
@@ -11,6 +12,8 @@ const PlaceholderImage = require('../../assets/images/background-image.jpeg');
 
 
 export default function Profile() {
+  const navigation = useNavigation();
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
     <View style={styles.container}>
@@ -23,6 +26,7 @@ export default function Profile() {
       <View style={styles.footerContainer}>
         <Button theme1="primary" label="Choose a photo" />
         <Button theme2="secondary" label="Use this photo" />
+     
       </View>
     </View>
     </SafeAreaView>
