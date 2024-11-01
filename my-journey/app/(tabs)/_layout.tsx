@@ -28,7 +28,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <TabBarIcon name="settings" color={color} />,
         }}
       />
-      
+       
     </Tabs>
   );
 }

@@ -2,7 +2,7 @@ import { StyleSheet } from "react-native";
 import { Image, type ImageSource } from "expo-image";
 
 type Props ={
-    imgSource: ImageSouce;
+    imgSource: ImageSource;
 };
 
 export default function ImageViewer({ imgSource }: Props) {

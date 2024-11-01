@@ -3,17 +3,22 @@ import React from "react";
 import { TextInput, View, Text, StyleSheet } from "react-native";
 
 // Define a functional component called 'CustomInputField'
-const InputField = ({ label, placeholder, isPassword = false }) => {
+type Props = {
+  label: string;
+  placeholder?: string;
+  isPassword?: boolean
+};
+const InputField = ({ label, placeholder, isPassword = false }:Props) => {
   // this function will handle the input text entered
-  function handleTextChange(value) {
-    console.log("➡️ text", value);
-  }
+  const handleTextChange = (text: string) => {
+    console.log("➡️ text", text);
+  };
 
   // Return a View component with the TextInput component and label as its children
   return (
     <View style={styles.container}>
       <Text style={styles.label}>{label}</Text>
-      <TextInput
+      <TextInput 
         secureTextEntry={isPassword}
         style={styles.input}
         placeholder={placeholder || "Enter text here ..."}

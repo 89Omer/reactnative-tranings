@@ -7,7 +7,6 @@ export default function loginpage() {
     <View style={styles.container}>
       <StatusBar style="auto" />
       <LoginScreen />
-
     </View>
   );
 }
