@@ -15,10 +15,10 @@ export default function TabLayout() {
       }}>
        
        <Tabs.Screen
-        name="profile"
+        name="loginpage"
         options={{
-          title: 'Upload Image',
-          tabBarIcon: ({ color }) => <TabBarIcon name="person" color={color} />,
+          title: 'Sign in',
+          tabBarIcon: ({ color }) => <TabBarIcon name="log-in-sharp" color={color} />,
         }}
       />
         <Tabs.Screen
