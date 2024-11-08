@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { router } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+
 
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
@@ -31,8 +34,8 @@ const LoginScreen = () => {
         Alert.alert('Login successful');
 
         // Simulate storing auth token (implement proper token storage in production)
-        localStorage.setItem('userToken', 'dummy-token');
-        localStorage.setItem('userName', user.name);
+        await AsyncStorage.setItem('userToken', 'dummy-token');
+        await AsyncStorage.setItem('userName', user.name);
 
         // Delay navigation briefly to show the alert
         setTimeout(() => {
