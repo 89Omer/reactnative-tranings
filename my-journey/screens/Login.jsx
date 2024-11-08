@@ -26,7 +26,6 @@ const LoginScreen = () => {
       const user = users.find((u) => u.email.toLowerCase() === email.toLowerCase());
 
       // Check if the user exists and the password matches
-      Alert.alert('Login successful');
       //Use when you have a password
       //if (user && user.password === password) {}
       if (user) {
