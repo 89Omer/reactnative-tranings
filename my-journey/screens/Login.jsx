@@ -1,60 +1,61 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { router } from 'expo-router';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../firebaseConfig';
 
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
+  const handleLogin = async () => {
+    // Basic validation
+    if (!email || !password) {
+      Alert.alert('Error', 'Please enter both email and password');
+      return;
+    }
 
-  const handleLogin = async () => {  // Add 'async' here
     setLoading(true);
     try {
-      // Fake APIs
-      let url1 = 'https://fakestoreapi.com/users';
-      let url2 = 'https://jsonplaceholder.typicode.com/users';
-  
-    
-      const response = await fetch(url2);
-      const users = await response.json();
+      // Firebase authentication
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
 
-      // Find the user with the matching email
-      const user = users.find((u) => u.email.toLowerCase() === email.toLowerCase());
+      Alert.alert('Success', 'Login Successful');
 
-      // Check if the user exists and the password matches
-      //Use when you have a password
-      //if (user && user.password === password) {}
-      if (user) {
-        // Successful login
-        Alert.alert('Login successful');
+      // Navigate to dashboard after successful login
+      setTimeout(() => {
+        router.replace('/auth/dashboard');
+      }, 1000);
 
-        // Simulate storing auth token (implement proper token storage in production)
-        await AsyncStorage.setItem('userToken', 'dummy-token');
-        await AsyncStorage.setItem('userName', user.name);
-
-        // Delay navigation briefly to show the alert
-        setTimeout(() => {
-          router.replace('/auth/dashboard');
-        }, 1000);
-      } else {
-        // Invalid credentials case - show alert and stop further execution
-        Alert.alert('Invalid credentials');
-      }
     } catch (error) {
-      // Handle network or unexpected errors
-      Alert.alert('Login failed. Please try again.');
+      let errorMessage = 'Login failed';
+      switch (error.code) {
+        case 'auth/invalid-credential':
+          errorMessage = 'Invalid email or password';
+          break;
+        case 'auth/user-not-found':
+          errorMessage = 'No user found with this email';
+          break;
+        case 'auth/wrong-password':
+          errorMessage = 'Incorrect password';
+          break;
+        case 'auth/invalid-email':
+          errorMessage = 'Invalid email address';
+          break;
+        default:
+          console.error('Unexpected login error:', error);
+      }
+      
+      Alert.alert('Error', errorMessage);
     } finally {
       setLoading(false);
     }
   };
-  
 
   const goToRegister = () => {
-    router.replace('/auth/register');
+    router.push('/auth/register');
   };
 
   return (
@@ -66,6 +67,8 @@ const LoginScreen = () => {
         value={email}
         onChangeText={setEmail}
         keyboardType="email-address"
+        autoCapitalize="none"
+        editable={!loading}
       />
       <TextInput
         style={styles.input}
@@ -73,16 +76,17 @@ const LoginScreen = () => {
         value={password}
         onChangeText={setPassword}
         secureTextEntry
+        editable={!loading}
       />
       <TouchableOpacity 
-          style={[styles.button, loading && styles.buttonDisabled]} 
-          onPress={handleLogin}
-          disabled={loading}
-        >
-          <Text style={styles.buttonText}>
-            {loading ? 'Signing in...' : 'Sign In'}
-          </Text>
-        </TouchableOpacity>
+        style={[styles.button, loading && styles.buttonDisabled]} 
+        onPress={handleLogin}
+        disabled={loading}
+      >
+        <Text style={styles.buttonText}>
+          {loading ? 'Signing in...' : 'Sign In'}
+        </Text>
+      </TouchableOpacity>
       
       <View style={styles.registerContainer}>
         <Text style={styles.registerText}>Don't have an account?</Text>
@@ -100,12 +104,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
+    backgroundColor: '#25292e',
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
-    color:'white'
+    color: 'white'
   },
   input: {
     width: '100%',
@@ -115,7 +120,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     paddingHorizontal: 10,
     marginVertical: 10,
-    color:'white'
+    color: 'white'
   },
   button: {
     backgroundColor: '#007AFF',

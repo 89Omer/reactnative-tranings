@@ -1,57 +1,99 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet,Alert} from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
-
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { ref, set } from 'firebase/database';
+import { auth, database } from '../firebaseConfig';
 
 const RegisterScreen = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   
   const [loading, setLoading] = useState(false);
 
   const router = useRouter();
-    
+
+  // Enhanced email validation
+  const isValidEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  // Password strength validation
+  const isStrongPassword = (password) => {
+    return password.length >= 8 && 
+           /[A-Z]/.test(password) && 
+           /[a-z]/.test(password) && 
+           /[0-9]/.test(password);
+  };
 
   const handleRegister = async () => {
+    // Enhanced validation
+    if (!name || !email || !password || !confirmPassword) {
+      Alert.alert('Error', 'Please fill in all fields');
+      return;
+    }
+
+    if (!isValidEmail(email)) {
+      Alert.alert('Error', 'Please enter a valid email address');
+      return;
+    }
+
+    if (!isStrongPassword(password)) {
+      Alert.alert('Error', 'Password must be at least 8 characters and include uppercase, lowercase, and numbers');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      Alert.alert('Error', 'Passwords do not match');
+      return;
+    }
+
     setLoading(true);
     try {
-      //Fake APIs
-      let url1 = 'https://fakestoreapi.com/users';
-      let url2 = 'https://jsonplaceholder.typicode.com/users';
-      const response = await fetch(url1, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name, email, password }),
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      const userRef = ref(database, 'users/' + user.uid);
+      await set(userRef, {
+        name: name.trim(),
+        email: email.toLowerCase(),
+        createdAt: new Date().toISOString(),
+        role: 'user'
       });
 
-      if (!response.ok) throw new Error('Registration failed');
+      Alert.alert('Success', 'Registration Successful');
 
-      const data = await response.json();
-
-       // Simulate storing auth token (implement proper token storage in production)
-       localStorage.setItem('userToken', 'dummy-token');
-       localStorage.setItem('userName', name);
-
-      Alert.alert('Registration Successful');
-  
-
-      // Wait for toast to be visible before navigation
       setTimeout(() => {
         router.replace('/auth/dashboard');
       }, 1000);
 
     } catch (error) {
-        Alert.alert('Not successful, check your internet connection')
-    
-
+      let errorMessage = 'Registration failed';
+      
+      switch (error.code) {
+        case 'auth/email-already-in-use':
+          errorMessage = 'Email already in use';
+          break;
+        case 'auth/invalid-email':
+          errorMessage = 'Invalid email address';
+          break;
+        case 'auth/weak-password':
+          errorMessage = 'Password is too weak';
+          break;
+        default:
+          // Consider logging the error to a service
+          console.error('Unexpected registration error:', error);
+      }
+      
+      Alert.alert('Error', errorMessage);
     } finally {
       setLoading(false);
     }
   };
-
+  
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Register</Text>
@@ -68,6 +110,7 @@ const RegisterScreen = () => {
         value={email}
         onChangeText={setEmail}
         keyboardType="email-address"
+        autoCapitalize="none"
         editable={!loading}
       />
       <TextInput
@@ -75,6 +118,14 @@ const RegisterScreen = () => {
         placeholder="Password"
         value={password}
         onChangeText={setPassword}
+        secureTextEntry
+        editable={!loading}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Confirm Password"
+        value={confirmPassword}
+        onChangeText={setConfirmPassword}
         secureTextEntry
         editable={!loading}
       />
@@ -125,7 +176,9 @@ const styles = StyleSheet.create({
   buttonText: {
     color: 'black',
     fontWeight: 'bold',
-  },
+  }
 });
 
 export default RegisterScreen;
+
+

@@ -1,40 +1,37 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { useRouter } from 'expo-router';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-//use this to install - expo install @react-native-async-storage/async-storage
-
-
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { router } from 'expo-router';
+import { signOut, onAuthStateChanged } from 'firebase/auth';
+import { auth } from '../firebaseConfig';
 
 const DashboardScreen = () => {
   const [name, setName] = useState('');
-  const router = useRouter();
-
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
-    // Load user name when component mounts
-    getUserName();
-  }, []);
-
-  const getUserName = async () => {
-    try {
-      const userName = await AsyncStorage.getItem('userName');
-      if (userName !== null) {
-        setName(userName);
+    // Listen for authentication state changes
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      if (currentUser) {
+        // User is signed in
+        setUser(currentUser);
+        // Try to get name from Firebase user or database
+        setName(currentUser.displayName || currentUser.email.split('@')[0]);
+      } else {
+        // No user is signed in, redirect to login
+        router.replace('/');
       }
-    } catch (error) {
-      console.error('Error reading userName:', error);
-    }
-  };
+    });
+
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
+  }, []);
 
   const handleLogout = async () => {
     try {
-      // Clear all stored data
-      await AsyncStorage.multiRemove(['userToken', 'userName']);
-      router.replace('/');
+      await signOut(auth);
+      // Navigation to login screen is handled by onAuthStateChanged
     } catch (error) {
-      console.error('Error during logout:', error);
+      Alert.alert('Logout Error', error.message);
     }
   };
 
@@ -44,15 +41,18 @@ const DashboardScreen = () => {
   const navigateToAnimationScreen = () => {
     router.replace('/page/animatedtextpage');
   };
-  const navigateToKeybaordAdjustScreen = () => {
+  const navigateToKeyboardAdjustScreen = () => {
     router.push('/page/keyboardheightpage');
   };
   const navigateToPressableButtonScreen = () => {
     router.push('/page/pressablebuttonpage');
   };
-  const navigateToRefreshAbleScreen = () => {
+  const navigateToRefreshableScreen = () => {
     router.push('/page/refreshablepage');
   };
+
+  // Render null if no user to prevent UI flash
+  if (!user) return null;
 
   return (
     <View style={styles.container}>
@@ -70,22 +70,19 @@ const DashboardScreen = () => {
         <TouchableOpacity style={styles.buttonTile} onPress={navigateToAnimationScreen}>
           <Text style={styles.buttonText}>React Native Animations</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.buttonTile} onPress={navigateToKeybaordAdjustScreen}>
-          <Text style={styles.buttonText}>React Native Keybaord Adjust</Text>
+        <TouchableOpacity style={styles.buttonTile} onPress={navigateToKeyboardAdjustScreen}>
+          <Text style={styles.buttonText}>React Native Keyboard Adjust</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.buttonTile} onPress={navigateToPressableButtonScreen}>
           <Text style={styles.buttonText}>React Native Pressable Button</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.buttonTile} onPress={navigateToRefreshAbleScreen}>
+        <TouchableOpacity style={styles.buttonTile} onPress={navigateToRefreshableScreen}>
           <Text style={styles.buttonText}>React Native Refreshable</Text>
         </TouchableOpacity>
       </View>
 
       <Text style={styles.subtitle}>Welcome {name}!</Text>
     </View>
-
-
-    
   );
 };
 
