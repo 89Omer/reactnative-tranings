@@ -1,21 +1,11 @@
-# Welcome to your Expo app 👋
+## For class 06 update dependencies if you face error
+1. npm install react-native-screens react-native-safe-area-context react-native-gesture-handler react-native-reanimated react-native-get-random-values @react-native-community/masked-view
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+2. npm install react@18.3.1 react-dom@18.3.1
 
-## Get started
+3. expo install react-native@0.76.1
 
-## Key Points to Note:
+4. npm cache clean --force
 
-1.Replace the Firebase configuration with your own from the Firebase Console
-2.Install required Firebase packages:
-3.npm install firebase
-
-## Add security rules in Firebase Console to protect sensitive data
-## implement proper authentication checks before allowing admin access
-
-## Recommendations:
-
-1.Use Firebase Authentication's built-in role management
-2.Implement server-side security rules
-3.Never store sensitive information like passwords in the database
-4.Use Firebase's built-in security features
+## Install for picker
+1. npx expo install @react-native-picker/picker

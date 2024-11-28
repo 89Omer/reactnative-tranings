@@ -1,38 +1,36 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
+import React, { useEffect, useState } from 'react';
 import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
-
-import { useColorScheme } from '@/hooks/useColorScheme';
-
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
+  const [isFirstLaunch, setIsFirstLaunch] = useState<boolean | null>(null);
 
   useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
+    const checkOnboardingStatus = async () => {
+      try {
+        const hasCompletedOnboarding = await AsyncStorage.getItem('hasCompletedOnboarding');
+        setIsFirstLaunch(hasCompletedOnboarding !== 'true');
+      } catch (error) {
+        console.error('Error checking onboarding status', error);
+        setIsFirstLaunch(true);
+      }
+    };
 
-  if (!loaded) {
-    return null;
+    checkOnboardingStatus();
+  }, []);
+
+  if (isFirstLaunch === null) {
+    return null; // Or a loading screen
   }
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-
-        <Stack.Screen name="+not-found" />
-      </Stack>
-    </ThemeProvider>
+    <Stack screenOptions={{ headerShown: false }}>
+      {isFirstLaunch ? (
+        <Stack.Screen name="onboarding/screen1" />
+      ) : (
+        <Stack.Screen name="(tabs)" />
+      )}
+      <Stack.Screen name="login" />
+    </Stack>
   );
 }

@@ -1,39 +1,63 @@
-// Import the necessary modules
-import React from "react";
-import { Pressable, Text, StyleSheet, Alert } from "react-native";
+import React from 'react';
+import { TouchableOpacity, Text, StyleSheet } from 'react-native';
 
-// Define a functional component called 'Button'
-const Button = ({ name }) => {
-  // Define the function to be called when the button is clicked
-  function clicked() {
-    Alert.alert("Button Click ✅");
-  }
+type ButtonProps = {
+  onPress: () => void;
+  disabled?: boolean;
+  variant?: 'solid' | 'outline';
+  children: React.ReactNode;
+};
 
-  // Return a Pressable component with the 'name' prop as its child
+export const Button: React.FC<ButtonProps> = ({ onPress, disabled, variant = 'solid', children }) => {
   return (
-    <Pressable onPress={clicked} style={styles.button}>
-      <Text style={styles.buttonText}>{name}</Text>
-    </Pressable>
+    <TouchableOpacity
+      onPress={onPress}
+      disabled={disabled}
+      style={[
+        styles.button,
+        variant === 'outline' ? styles.outline : styles.solid,
+        disabled && styles.disabled
+      ]}
+    >
+      <Text
+        style={[
+          styles.text,
+          variant === 'outline' ? styles.outlineText : styles.solidText
+        ]}
+      >
+        {children}
+      </Text>
+    </TouchableOpacity>
   );
 };
 
-// Define the styles for the button
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: "#4CAF50",
-    borderRadius: 5,
-    padding: 10,
-    marginTop: 10,
-    marginBottom: 10,
-    alignItems: "center",
-    justifyContent: "center",
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  buttonText: {
-    color: "#FFFFFF",
+  solid: {
+    backgroundColor: '#007bff',
+  },
+  outline: {
+    backgroundColor: 'transparent',
+    borderWidth: 2,
+    borderColor: '#007bff',
+  },
+  text: {
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: 'bold',
+  },
+  solidText: {
+    color: '#ffffff',
+  },
+  outlineText: {
+    color: '#007bff',
+  },
+  disabled: {
+    opacity: 0.6,
   },
 });
-
-// Export the 'Button' component as the default export
-export default Button;

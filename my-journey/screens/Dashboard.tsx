@@ -7,81 +7,78 @@ import { auth } from '../firebaseConfig';
 const DashboardScreen = () => {
   const [name, setName] = useState('');
   const [user, setUser] = useState(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false); // State to manage menu visibility
 
   useEffect(() => {
-    // Listen for authentication state changes
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
-        // User is signed in
         setUser(currentUser);
-        // Try to get name from Firebase user or database
         setName(currentUser.displayName || currentUser.email.split('@')[0]);
       } else {
-        // No user is signed in, redirect to login
         router.replace('/');
       }
     });
 
-    // Cleanup subscription on unmount
     return () => unsubscribe();
   }, []);
 
   const handleLogout = async () => {
     try {
       await signOut(auth);
-      // Navigation to login screen is handled by onAuthStateChanged
     } catch (error) {
       Alert.alert('Logout Error', error.message);
     }
   };
 
-  const navigateToAlertScreen = () => {
-    router.replace('/page/alertmessagepage');
-  };
-  const navigateToAnimationScreen = () => {
-    router.replace('/page/animatedtextpage');
-  };
-  const navigateToKeyboardAdjustScreen = () => {
-    router.push('/page/keyboardheightpage');
-  };
-  const navigateToPressableButtonScreen = () => {
-    router.push('/page/pressablebuttonpage');
-  };
-  const navigateToRefreshableScreen = () => {
-    router.push('/page/refreshablepage');
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
   };
 
-  // Render null if no user to prevent UI flash
+  // Navigation Functions
+  const navigateToAlertScreen = () => router.push('/page/alertmessagepage');
+  const navigateToAnimationScreen = () => router.push('/page/animatedtextpage');
+  const navigateToKeyboardAdjustScreen = () => router.push('/page/keyboardheightpage');
+  const navigateToPressableButtonScreen = () => router.push('/page/pressablebuttonpage');
+  const navigateToRefreshableScreen = () => router.push('/page/refreshablepage');
+  const navigateToMyProfileScreen = () => router.push('/auth/profile');
+
   if (!user) return null;
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>DEMO UI PAGES</Text>
-        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-          <Text style={styles.logoutButtonText}>Logout</Text>
+        <Text style={styles.title}>Welcome, {name}!</Text>
+        <TouchableOpacity style={styles.hamburger} onPress={toggleMenu}>
+          <Text style={styles.hamburgerText}>{isMenuOpen ? 'Close Menu' : 'Menu'}</Text>
         </TouchableOpacity>
       </View>
 
-      <View style={styles.buttonsContainer}>
-        <TouchableOpacity style={styles.buttonTile} onPress={navigateToAlertScreen}>
-          <Text style={styles.buttonText}>React Native Alerts</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.buttonTile} onPress={navigateToAnimationScreen}>
-          <Text style={styles.buttonText}>React Native Animations</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.buttonTile} onPress={navigateToKeyboardAdjustScreen}>
-          <Text style={styles.buttonText}>React Native Keyboard Adjust</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.buttonTile} onPress={navigateToPressableButtonScreen}>
-          <Text style={styles.buttonText}>React Native Pressable Button</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.buttonTile} onPress={navigateToRefreshableScreen}>
-          <Text style={styles.buttonText}>React Native Refreshable</Text>
-        </TouchableOpacity>
-      </View>
-
-      <Text style={styles.subtitle}>Welcome {name}!</Text>
+      {isMenuOpen && (
+        <View style={styles.menu}>
+          <TouchableOpacity style={styles.menuItem} onPress={navigateToMyProfileScreen}>
+            <Text style={styles.menuItemText}>Profile</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.menuItem} onPress={handleLogout}>
+            <Text style={styles.menuItemText}>Logout</Text>
+          </TouchableOpacity>
+          <Text style={styles.menuCategory}>Demo Pages</Text>
+          <TouchableOpacity style={styles.menuItem} onPress={navigateToAlertScreen}>
+            <Text style={styles.menuItemText}>React Native Alerts</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.menuItem} onPress={navigateToAnimationScreen}>
+            <Text style={styles.menuItemText}>React Native Animations</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.menuItem} onPress={navigateToKeyboardAdjustScreen}>
+            <Text style={styles.menuItemText}>React Native Keyboard Adjust</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.menuItem} onPress={navigateToPressableButtonScreen}>
+            <Text style={styles.menuItemText}>React Native Pressable Button</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.menuItem} onPress={navigateToRefreshableScreen}>
+            <Text style={styles.menuItemText}>React Native Refreshable</Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </View>
   );
 };
@@ -89,9 +86,8 @@ const DashboardScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
     padding: 20,
+    backgroundColor: '#f5f5f5',
   },
   header: {
     flexDirection: 'row',
@@ -103,59 +99,44 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 10,
   },
-  subtitle: {
-    fontSize: 16,
-    color: '#666',
-    marginBottom: 30,
-  },
-  logoutButton: {
-    backgroundColor: '#FF3B30',
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 5,
-  },
-  logoutButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
-  },
-  nextButton: {
+  hamburger: {
     backgroundColor: '#007AFF',
-    paddingVertical: 12,
-    paddingHorizontal: 24,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
     borderRadius: 5,
-    marginTop: 20,
   },
-  nextButtonText: {
-    color: 'white',
+  hamburgerText: {
+    color: '#fff',
+    fontSize: 16,
     fontWeight: 'bold',
   },
-  buttonsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    marginBottom: 20,
-  },
-  buttonTile: {
-    width: '30%',
-    paddingVertical: 20,
-    paddingHorizontal: 16,
-    backgroundColor: 'white',
+  menu: {
+    backgroundColor: '#fff',
     borderRadius: 8,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    padding: 10,
+    width: '100%',
     elevation: 5,
-    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 5,
   },
-  buttonText: {
+  menuCategory: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginTop: 10,
+    marginBottom: 5,
+  },
+  menuItem: {
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
+  },
+  menuItemText: {
     fontSize: 16,
-    textAlign: 'center',
+    color: '#333',
   },
 });
 

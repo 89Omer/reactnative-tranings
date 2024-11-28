@@ -8,7 +8,9 @@ export default function Home() {
 //       <Text>Welcome to the Home Page!</Text>
 //     </View>
 //   );
-  return <Redirect href="/(tabs)/loginpage" />;
+  // return <Redirect href="/(tabs)/loginpage" />;
+
+  return <Redirect href="/onboarding/screen1" />;
 
 }
 
