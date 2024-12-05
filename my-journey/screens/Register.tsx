@@ -103,6 +103,7 @@ const RegisterScreen = () => {
         value={name}
         onChangeText={setName}
         editable={!loading}
+        placeholderTextColor="white"
       />
       <TextInput
         style={styles.input}
@@ -112,6 +113,7 @@ const RegisterScreen = () => {
         keyboardType="email-address"
         autoCapitalize="none"
         editable={!loading}
+        placeholderTextColor="white"
       />
       <TextInput
         style={styles.input}
@@ -120,6 +122,7 @@ const RegisterScreen = () => {
         onChangeText={setPassword}
         secureTextEntry
         editable={!loading}
+        placeholderTextColor="white"
       />
       <TextInput
         style={styles.input}
@@ -128,6 +131,7 @@ const RegisterScreen = () => {
         onChangeText={setConfirmPassword}
         secureTextEntry
         editable={!loading}
+        placeholderTextColor="white"
       />
       <TouchableOpacity 
         style={[styles.button, loading && styles.buttonDisabled]} 

@@ -69,6 +69,7 @@ const LoginScreen = () => {
         keyboardType="email-address"
         autoCapitalize="none"
         editable={!loading}
+        placeholderTextColor="white"
       />
       <TextInput
         style={styles.input}
@@ -77,6 +78,7 @@ const LoginScreen = () => {
         onChangeText={setPassword}
         secureTextEntry
         editable={!loading}
+        placeholderTextColor="white"
       />
       <TouchableOpacity 
         style={[styles.button, loading && styles.buttonDisabled]} 
@@ -120,7 +122,6 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     paddingHorizontal: 10,
     marginVertical: 10,
-    color: 'white'
   },
   button: {
     backgroundColor: '#007AFF',
@@ -141,7 +142,7 @@ const styles = StyleSheet.create({
     gap: 5,
   },
   registerText: {
-    color: '#666',
+    color: '#ffff',
   },
   registerButton: {
     color: '#007AFF',

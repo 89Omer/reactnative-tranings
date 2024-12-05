@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
+import { markOnboardingComplete } from '@/utils/onboardingStorage'; // Adjust the path as needed
 
 export default function OnboardingScreen1() {
   const router = useRouter();
@@ -17,12 +18,15 @@ export default function OnboardingScreen1() {
         Track your personal growth and achievements with ease
       </Text>
       <View style={styles.buttonContainer}>
-        <TouchableOpacity 
-          style={styles.skipButton}
-          onPress={() => router.replace('/login')}
-        >
-          <Text style={styles.skipButtonText}>Skip</Text>
-        </TouchableOpacity>
+      <TouchableOpacity 
+        style={styles.skipButton}
+        onPress={async () => {
+          await markOnboardingComplete(); // Mark onboarding as complete
+          router.replace('/(auth)/login'); // Redirect to login
+        }}
+      >
+        <Text style={styles.skipButtonText}>Skip</Text>
+      </TouchableOpacity>
         <TouchableOpacity 
           style={styles.nextButton}
           onPress={() => router.push('/onboarding/screen2')}
