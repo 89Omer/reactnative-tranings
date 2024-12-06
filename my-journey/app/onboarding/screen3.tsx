@@ -11,7 +11,7 @@ export default function OnboardingScreen3() {
   const handleFinishOnboarding = async () => {
     try {
       await AsyncStorage.setItem('hasCompletedOnboarding', 'true');
-      router.replace('/page/coursepage');
+      router.navigate('/page/coursepage');
     } catch (error) {
       console.error('Error saving onboarding status', error);
     }
